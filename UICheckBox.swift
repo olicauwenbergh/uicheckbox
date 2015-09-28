@@ -21,7 +21,7 @@ class UICheckBox: UIView {
             }
         }
     }
-    
+
     /// Stroke color of the circle
     @IBInspectable var strokeColor: UIColor = UIColor.lightGrayColor() {
         didSet {
@@ -30,7 +30,7 @@ class UICheckBox: UIView {
             }
         }
     }
-    
+
     /// Background color of the circle
     @IBInspectable var background: UIColor = UIColor.whiteColor() {
         didSet {
@@ -39,7 +39,7 @@ class UICheckBox: UIView {
             }
         }
     }
-    
+
     // MARK: Checked properties
     /// Tick color when checked. Tick is clear when unchecked
     @IBInspectable var tick: UIColor = UIColor.whiteColor() {
@@ -49,7 +49,7 @@ class UICheckBox: UIView {
             }
         }
     }
-    
+
     // MARK: State properties
     /// State property to determine whether the box is checked or not
     @IBInspectable var checked: Bool = false {
@@ -70,50 +70,50 @@ class UICheckBox: UIView {
             }
         }
     }
-    
+
     // MARK: Layer properties
     /// Layer to draw the box
     private var circleLayer: CAShapeLayer?
-    
+
     /// Layer to draw the tick
     private var tickLayer: CAShapeLayer?
-    
+
     // MARK: Gesture properties
     /// A tap gesture recognizer to change the state of the checkbox
     private var tap: UITapGestureRecognizer?
-    
+
     // MARK: - Initialization -
     // MARK: Initializers
     override init(frame: CGRect) {
         super.init(frame: frame)
         addTapGestureRecognizer()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         addTapGestureRecognizer()
     }
-    
+
     // MARK: Gesture recognizer
     /// Adding the tap gesture recognizer to the view
     private func addTapGestureRecognizer() {
         tap = UITapGestureRecognizer(target: self, action: Selector("didTappedCheckBox:"))
         addGestureRecognizer(tap!)
     }
-    
+
     /// Notifies the view has been tapped
     func didTappedCheckBox(sender: UITapGestureRecognizer) {
         checked = !checked
     }
-    
+
     // MARK: - Drawing -
     /// Drawing of the two layers, box and tick
     override func drawRect(rect: CGRect) {
-        
+
         /// Draw circle layer
         /// Determine the biggest possible radius in order to fit the frame
         let biggestRadius = (layer.frame.width < layer.frame.height) ? layer.frame.width : layer.frame.height
-        
+
         /// Create a circle path for the checkbox button
         let circlePath = UIBezierPath(
             arcCenter: CGPoint(x: layer.frame.width / 2.0,y: layer.frame.height / 2.0),
@@ -121,13 +121,13 @@ class UICheckBox: UIView {
             startAngle: 0.0,
             endAngle: CGFloat(M_PI * 2.0),
             clockwise: true)
-        
+
         /// Initialize the circle layer
         circleLayer = CAShapeLayer()
-        
+
         /// Add the circle path to the layer
         circleLayer?.path = circlePath.CGPath
-        
+
         if checked {
             /// Set the circle stroke and fill to the view's tint color
             circleLayer?.fillColor = self.tintColor.CGColor
@@ -137,50 +137,50 @@ class UICheckBox: UIView {
             circleLayer?.fillColor = background.CGColor
             circleLayer?.strokeColor = strokeColor.CGColor
         }
-        
+
         /// Set the stroke width
         circleLayer?.lineWidth = strokeWidth
-        
+
         /// Draw a complete circle
         circleLayer?.strokeEnd = 1.0
-        
+
         /// Add the circle layer to the view's layer
         layer.addSublayer(circleLayer!)
-        
+
         /// Draw tick layer
         /// Determine the size of the side of the biggest square possible inside the circle through Pythagoras Theorem
         let biggestSide = sqrt(pow((biggestRadius), 2) / 2)
-        
+
         /// Make the side 80% smaller to make a square inside the circle to be used as the bounds of the tick
         let side = (biggestSide / 100 * 80) - (strokeWidth * 2)
-        
+
         /// Make a square to be used as the bounds of the tick
         let square = CGRectMake((frame.width / 2) - (side / 2), (frame.height / 2) - (side / 2), side, side)
-        
+
         /// Create a path to form the tick
         let tickPath = UIBezierPath()
-        
+
         /// Start at the left side of the square, 60% down
         tickPath.moveToPoint(CGPoint(
             x: square.origin.x,
             y: square.origin.y + (square.size.height / 100 * 60)))
-        
+
         /// Draw line to the bottom side of the square, 40% to the right
         tickPath.addLineToPoint(CGPoint(
             x: square.origin.x + (square.size.width / 100 * 40),
             y: square.origin.y + square.size.height))
-        
+
         /// Draw a line to the upper right corner of the square
         tickPath.addLineToPoint(CGPoint(
             x: square.origin.x + square.size.width,
             y: square.origin.y))
-        
+
         /// Initialize the tick layer
         tickLayer = CAShapeLayer()
-        
+
         /// Add the tick path to the layer
         tickLayer?.path = tickPath.CGPath
-        
+
         if checked {
             /// Set the tick stroke color and make the fill clear
             tickLayer?.strokeColor = tick.CGColor
@@ -190,10 +190,10 @@ class UICheckBox: UIView {
             tickLayer?.strokeColor = UIColor.clearColor().CGColor
             tickLayer?.fillColor = UIColor.clearColor().CGColor
         }
-        
+
         /// Set the stroke width
         tickLayer?.lineWidth = strokeWidth
-        
+
         /// Add the tick layer to the view's layer
         layer.addSublayer(tickLayer!)
     }
