@@ -8,8 +8,14 @@
 
 import UIKit
 
+protocol UICheckBoxDelegate {
+    func didSelectCheckBox(checkBox: UICheckBox, forControlEvents event: UIEvent)
+}
+
 @IBDesignable
-class UICheckBox: UIView {
+class UICheckBox: UIControl {
+
+    var delegate: UICheckBoxDelegate?
 
     // MARK: - Properties -
     // MARK: Unchecked properties
@@ -78,32 +84,31 @@ class UICheckBox: UIView {
     /// Layer to draw the tick
     private var tickLayer: CAShapeLayer?
 
-    // MARK: Gesture properties
-    /// A tap gesture recognizer to change the state of the checkbox
-    private var tap: UITapGestureRecognizer?
-
     // MARK: - Initialization -
     // MARK: Initializers
     override init(frame: CGRect) {
         super.init(frame: frame)
-        addTapGestureRecognizer()
+        backgroundColor = UIColor.clearColor()
+        addTargetAction()
     }
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        addTapGestureRecognizer()
+        backgroundColor = UIColor.clearColor()
+        addTargetAction()
     }
 
-    // MARK: Gesture recognizer
-    /// Adding the tap gesture recognizer to the view
-    private func addTapGestureRecognizer() {
-        tap = UITapGestureRecognizer(target: self, action: Selector("didTappedCheckBox:"))
-        addGestureRecognizer(tap!)
+    // MARK: Target action
+    /// Adding target action to the view
+    private func addTargetAction() {
+        self.addTarget(self, action: Selector("didTappedCheckBox:event:"), forControlEvents: UIControlEvents.TouchUpInside)
     }
 
     /// Notifies the view has been tapped
-    func didTappedCheckBox(sender: UITapGestureRecognizer) {
-        checked = !checked
+    func didTappedCheckBox(sender: UIButton, event: UIEvent) {
+        if let delegate = self.delegate {
+            delegate.didSelectCheckBox(self, forControlEvents: event)
+        }
     }
 
     // MARK: - Drawing -
